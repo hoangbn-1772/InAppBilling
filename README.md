@@ -21,3 +21,9 @@
  - Tham khảo thêm <a href="https://developer.android.com/google/play/billing/billing_overview#unique-one-time-product-configuration-options">tại đây</a>
  
  # Implement Google Play Billing
+ 
+ # Source
+ - Android Developer: https://developer.android.com/google/play/billing/billing_library_overview#acknowledge
+ - Medium:
+  + https://medium.com/@vleonovs8/tutorial-google-play-billing-in-app-purchases-6143bda8d290
+  + https://medium.com/exploring-android/exploring-the-play-billing-library-for-android-55321f282929
