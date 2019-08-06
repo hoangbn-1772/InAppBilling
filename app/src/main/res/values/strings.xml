@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">BillingPJSample</string>
+    <string name="load_product">Load Product</string>
+</resources>
