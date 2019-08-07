@@ -20,9 +20,43 @@
   + Subscription: Giá mà khách hàng phải trả theo định kỳ.
  - Tham khảo thêm <a href="https://developer.android.com/google/play/billing/billing_overview#unique-one-time-product-configuration-options">tại đây</a>
  
- # Implement Google Play Billing
+# Implement Google Play Billing
+ - Các bước để tích hợp Google Play Billing vào trong ứng dụng
+### Step 1: Update your app's dependencies
  
- # Source
+<img src="dependencies.png"/>
+ 
+### Step 2: Connect to Google Play
+- Tạo một instance cho **BillingClient**.
+- Phải gọi **setListener()** thông qua **PurchasesUpdatedListener** để nhận các cập nhật về các giao dịch mua được tạo bởi app, cũng như do Google Play Store khởi tạo.
+- Implement **BillingClientStateListener** để nhận một callback sau khi thực hiện quá trình kết nối.
+
+<img src="connect_to_GP.png"/>
+ 
+### Query for in-app product details.
+- Query Google Play để lấy thông tin chi tiết product gọi **querySkuDetailsAsync()**.
+- Tham số truyền vào là một **SkuDetailsParams** chỉ định một danh sách chuỗi product ID và **SkuType** (INAPP, SUBS).
+ 
+ <img src="query_product_detail.png"/>
+ 
+- Xử lý kết quả trả về trong **onSkuDetailsResponse()** bằng cách implements **SkuDetailsResponseListener**. Kiểm tra **responseCode** xem kết quả trả về:
+    + Thành công (BillingResponse.OK): Trả về một danh sách các đối tượng SkuDetails
+    + Nếu xảy ra lỗi: có thể sử dụng **getDebugMessage** để xem thông tin lỗi.
+- Tham khảo thêm responseCode: <a href="/reference/com/android/billingclient/api/BillingClient.BillingResponse"><code translate="no" dir="ltr">BillingClient.BillingResponse</code></a>
+    
+<img src="handle_query-result.png"/>
+
+### Step 3: Enable the purchase of an in-app product
+- Một số thiết bị Android có version cũ hơn Google Play Store sẽ không hỗ trợ một số product nhất định (như là subscriptions). Vì thế, trước khi billing flow hãy kiểm tra xem device có hỗ trợ các sản phẩm bạn muốn bán không **isFeatureSupported()**
+- Gọi **launchBillingFlow()** từ UI thread để bắt đầu yêu cầu mua từ app. Tham số truyền vào là một **BillingFlowParams**
+
+<img src="enable_purchase.png"/>
+
+- Method **launchBillingFlow** trả về một danh sách **responseCode** và một danh sách đối tượng **Purchase** trong method **onPurchasesUpdated** được override lại từ **PurchasesUpdatedListener**
+
+<img src="billing_flow_response.png"/>
+
+# Source
  - Android Developer: https://developer.android.com/google/play/billing/billing_library_overview#acknowledge
  - Medium:
   + https://medium.com/@vleonovs8/tutorial-google-play-billing-in-app-purchases-6143bda8d290
