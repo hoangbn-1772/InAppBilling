@@ -31,20 +31,54 @@ class MainActivity : AppCompatActivity(), PurchasesUpdatedListener, View.OnClick
         }
     }
 
+    /**
+     * For consumable products: One-time products
+     */
     private fun handlePurchase(purchase: Purchase) {
-        /*For consumable products*/
-        if (!purchase.isAcknowledged) {
-            val consumeParams = ConsumeParams.newBuilder()
-                .setPurchaseToken(purchase.purchaseToken)
-                .setDeveloperPayload(purchase.developerPayload)
-                .build()
-            billingClient.consumeAsync(consumeParams) { billingResult, purchaseToken ->
-                if (billingResult.responseCode == BillingClient.BillingResponseCode.OK && purchaseToken != null) {
-                    println("AllowMultiplePurchases success, responseCode: ${billingResult.responseCode}")
-                } else {
-                    println("Can't allowMultiplePurchases, responseCode: ${billingResult.responseCode}")
+        if (purchase.purchaseState == Purchase.PurchaseState.PURCHASED) {
+            if (!purchase.isAcknowledged) {
+                val consumeParams = ConsumeParams.newBuilder()
+                    .setPurchaseToken(purchase.purchaseToken)
+                    .setDeveloperPayload(purchase.developerPayload)
+                    .build()
+                billingClient.consumeAsync(consumeParams) { billingResult, purchaseToken ->
+                    if (billingResult.responseCode == BillingClient.BillingResponseCode.OK && purchaseToken != null) {
+                        println("AllowMultiplePurchases success, responseCode: ${billingResult.responseCode}")
+                    } else {
+                        println("Can't allowMultiplePurchases, responseCode: ${billingResult.responseCode}")
+                    }
                 }
             }
+        } else if (purchase.purchaseState == Purchase.PurchaseState.PENDING) {
+            // Here you can confirm to the user that they've started the pending
+            // purchase, and to complete it, they should follow instructions that
+            // are given to them. You can also choose to remind the user in the
+            // future to complete the purchase if you detect that it is still
+            // pending.
+        }
+    }
+
+    /**
+     * For acknowledge a Subscriptions purchase
+     */
+    private fun handlePurchaseForSubs(purchase: Purchase) {
+        if (purchase.purchaseState == Purchase.PurchaseState.PURCHASED) {
+            if (!purchase.isAcknowledged) {
+                val acknowledgePurchaseParams = AcknowledgePurchaseParams
+                    .newBuilder()
+                    .setPurchaseToken(purchase.purchaseToken)
+                    .build()
+
+                billingClient.acknowledgePurchase(acknowledgePurchaseParams) {
+                    if (it.responseCode == BillingClient.BillingResponseCode.OK) {
+                        // Success
+                    } else {
+                        // Not success
+                    }
+                }
+            }
+        } else if (purchase.purchaseState == Purchase.PurchaseState.PENDING) {
+            // Handle pending
         }
     }
 
@@ -117,6 +151,6 @@ class MainActivity : AppCompatActivity(), PurchasesUpdatedListener, View.OnClick
     }
 
     companion object {
-        private val skuList = listOf("Get 5 coins", "Get 10 coins", "Get 20 coins")
+        private val skuList = listOf("get_5_coins", "get_10_coins", "get_20_coins")
     }
 }
