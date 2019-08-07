@@ -24,20 +24,20 @@
  - Các bước để tích hợp Google Play Billing vào trong ứng dụng
 ### Step 1: Update your app's dependencies
  
-<img src="dependencies.png"/>
+<img src="images/dependencies.png"/>
  
 ### Step 2: Connect to Google Play
 - Tạo một instance cho **BillingClient**.
 - Phải gọi **setListener()** thông qua **PurchasesUpdatedListener** để nhận các cập nhật về các giao dịch mua được tạo bởi app, cũng như do Google Play Store khởi tạo.
 - Implement **BillingClientStateListener** để nhận một callback sau khi thực hiện quá trình kết nối.
 
-<img src="connect_to_GP.png"/>
+<img src="images/connect_to_GP.png"/>
  
 ### Step 3 Query for in-app product details.
 - Query Google Play để lấy thông tin chi tiết product gọi **querySkuDetailsAsync()**.
 - Tham số truyền vào là một **SkuDetailsParams** chỉ định một danh sách chuỗi product ID và **SkuType** (INAPP, SUBS).
  
- <img src="query_product_detail.png"/>
+ <img src="images/query_product_detail.png"/>
  
 - Xử lý kết quả trả về trong **onSkuDetailsResponse()** bằng cách implements **SkuDetailsResponseListener**. Kiểm tra **responseCode** xem kết quả trả về:
     + Thành công (BillingResponse.OK): Trả về một danh sách các đối tượng SkuDetails
