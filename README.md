@@ -19,8 +19,12 @@
   + Rewarded purchases: Không phải trả phí thay vào đó người dùng xem quảng cáo
   + Subscription: Giá mà khách hàng phải trả theo định kỳ.
  - Tham khảo thêm <a href="https://developer.android.com/google/play/billing/billing_overview#unique-one-time-product-configuration-options">tại đây</a>
- 
-# Implement Google Play Billing
+
+# Các bước tích hợp In-app billing trong một ứng dụng
+
+<img src="images/steps_in_app_billing.png"/>
+
+## Add Google Play Billing L in app
  - Các bước để tích hợp Google Play Billing vào trong ứng dụng
 ### Step 1: Update your app's dependencies
  
@@ -86,6 +90,39 @@
 - Bạn nên xáo trộn public key và mã Google Play Billing để tránh bị tấn công.
 
 - Tham khảo: <a href="https://developer.android.com/google/play/billing/billing_library_overview#Verify-purchase-device"><code translate="no" dir="ltr">Verify a purchase on a device</code></a>
+
+## Generate APK/ AppBundle
+- Generate variant release với các cấu hình tương ứng
+- Đảm bảo app đã được cấp quyền: <uses-permission android:name="com.android.vending.BILLING" />
+- Nếu là app mới đưa lên chợ, cần tạo một keystore mới.
+
+## Upload app to Google Play Console
+- Bạn cần phải có tài khoản Google Play Console <a href="https://support.magplus.com/hc/en-us/articles/204270878-Android-Setting-up-Your-Google-Play-Developer-Account">xem hướng dẫn tại đây</a>
+- Trong bảng điều khiển chọn: All Application -> Create Application -> Enter title and create.
+- Nếu chỉ cần test mà không cần đẩy hẳn lên Store thì chỉ cần sử dụng Internal Test Track là đủ. Cách cấu hình: App Releases -> Internal test track -> Create Release -> Upload signed apk -> Save - Review.
+- Điền đầy đủ các mục như **Store listing, Content rating, Pricing & distribution** sau đó chọn **START ROLLOUT TO BETA** để public app ở dạng Test.
+
+## Prepare products
+### Add one-time product
+- Google Play Billing hỗ trợ 2 loại one-time products:
+    + Non-consumable: Là các product sử dụng vĩnh viễn (giáp, khiên,...)
+    + Consumable: Là các product tạm thời, có thể mua lại (máu, mana,...)
+- Để chỉ ra rằng một one-time product đã được tiêu thụ, gọi **consumeAsync** từ instance **BillingClient**, kết quả trả về thông qua **ConsumeResponseListener**.
+
+<img src="images/consumable.png"/>
+
+- Quá trình giao dịch mua thành công cũng tạo ra một **purchase token*.
+- Ngoài ra bạn bạn có thể tạo mã khuyến mãi **promo code**.
+
+### Add rewarded product
+- Một cách mang đến lợi ích cho người dùng. Các **rewarded products** hoặc các item người dùng có thể nhận được sau khi xem các video quảng cáo.
+- Các sản phẩm được thưởng này là các sản phẩm được tiêu thụ (comsume) để người dùng có thể nhận được nhiều lần.
+- Để hiện thị video quảng cáo, sử dụng method **loadRewardedSku()** truyền vào đối tượng **RewardLoadParams** và kết quả trả về thông qua **RewardResponseListener**.
+- Các quảng cáo phải phù hợp với lứa tuổi mà app hướng đến.
+
+<img src="images/rewarded_product.png"/>
+
+### Add subscription
 
 # Source
  - Android Developer: https://developer.android.com/google/play/billing/billing_library_overview#acknowledge
