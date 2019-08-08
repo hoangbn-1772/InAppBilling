@@ -70,6 +70,23 @@
 
 <img src="images/acknowledge_subscription.png"/>
 
+### Verify a purchase
+- Bạn luôn phải xác minh rằng trạng thái mua hàng là PURCHASED và các chi tiết mua hàng khác mà ứng dụng của bạn nhận được trong **onPurchaseUpdated** trước khi cung cấp cho người dùng quyền truy cập vào những sản phẩm họ đã mua.
+#### Verify a purchase on a server
+- Xác minh mua hàng mua hàng trên server, giúp bạn bảo vệ ứng dụng của mình khỏi những kẻ tấn công cố gắng thiết kế ngược tệp APK và vô hiệu hóa logic xác minh.
+
+<img src="images/verify_purchase_on_server.png"/>
+
+- Tham khảo: <a href="https://developer.android.com/google/play/billing/billing_library_overview#Verify-purchase"><code translate="no" dir="ltr">Verify a purchase on a server</code></a>
+
+#### Verify a purchase on a device
+- Nếu bạn không chạy server thì bạn vẫn có thể xác thực các purchase detail trong app của bạn.
+- Google Play sẽ ký chuỗi JSON chứa response data của giao dịch mua. Để nhận chuỗi JSON này sử dụng **getOriginalJson()** trong **Purchase**. Google Play sử dụng Key riêng được liên kết với app của bạn trong Play Console để tạo chữ ký này. 
+- Google Play Console tạo cặp khóa RSA (được mã hóa Base64) cho mỗi app. Khi nhận được response đã ký này, bạn có thể sử dụng public key của cặp khóa RSA để xác minh.
+- Bạn nên xáo trộn public key và mã Google Play Billing để tránh bị tấn công.
+
+- Tham khảo: <a href="https://developer.android.com/google/play/billing/billing_library_overview#Verify-purchase-device"><code translate="no" dir="ltr">Verify a purchase on a device</code></a>
+
 # Source
  - Android Developer: https://developer.android.com/google/play/billing/billing_library_overview#acknowledge
  - Medium:
