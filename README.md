@@ -54,7 +54,7 @@
 
 - Method **launchBillingFlow** trả về một danh sách **responseCode** và một danh sách đối tượng **Purchase** trong method **onPurchasesUpdated** được override lại từ **PurchasesUpdatedListener**
 
-<img src="billing_flow_response.png"/>
+<img src="images/billing_flow_response.png"/>
 
 ### Acknowledge a purchase
 - Từ Google Play Billing Library version 2.0 trở lên, bạn phải xác nhận tất cả các giao dịch mua trong vòng 3 ngày, nếu không xác nhận thì giao dịch sẽ được hủy bỏ, người dùng được hoàn lại tiền. Chỉ áp dụng khi giao dịch mua chuyển sang trạng thái SUCCESS, không áp dụng ở trạng thái PENDING.
