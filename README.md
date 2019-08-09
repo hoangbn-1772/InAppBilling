@@ -159,7 +159,15 @@
 - Có thể test trên mọi thiết bị Android từ 1.6 trở lên. Version mới nhất của Google Play phải được cài trên device.
 
 - Chi tiết: <a href="https://developer.android.com/google/play/billing/billing_testing">Test Google Play Billing</a>
-  
+
+# Các loại item trong game
+- Mua máu, mana: loại one-time product có thể tiêu thụ, có thể mua nhiều lần.
+- Mua giáp:
+    + Loại one-time product không thể tiêu thụ, sử dụng vĩnh viễn
+    + Loại one-time product có thể tiêu thụ, mua nhiều lần, hỏng có thể mua mới
+- Mua thêm màn chơi, tính năng: loại one-time product, chỉ cần mua một lần.
+- Với các event, có thể cung cấp promo code, giảm giá vật phẩm để thu hút người dùng
+- Muốn chơi tiếp khi chết, thêm lượt chơi, có thêm vật phẩm: có thể dùng loại rewarded product (x)
 # Source
  - Android Developer: https://developer.android.com/google/play/billing/billing_library_overview#acknowledge
  - Medium:
