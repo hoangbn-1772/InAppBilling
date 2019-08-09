@@ -1,5 +1,10 @@
 # Google Play Billing
 - Google Play Billing là một dịch vụ bán nội dung số trên Android.
+- Play Billing Library Features:
+	+ Lấy thông tin chi tiết về các in-app items và subscriptions trong ứng dụng
+	+ Thu phí người dùng cho các in-app billing và subscription
+	+ Quản lý các in-app billing và subscription một cách linh hoạt
+	+ Lấy danh sách non-consumed purchase, purchase history.
 
 ## In-app product types
 - One-time products: ví dụ game levels, media files...

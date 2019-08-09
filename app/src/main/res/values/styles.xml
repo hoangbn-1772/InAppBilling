@@ -8,4 +8,22 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <!-- Button styles -->
+    <style name="BaseButtonStyle" parent="Widget.AppCompat.Button.Colored">
+        <item name="android:layout_width">@dimen/dp_152</item>
+        <item name="android:layout_height">@dimen/dp_40</item>
+    </style>
+
+    <style name="ButtonStyle" parent="BaseButtonStyle">
+        <item name="android:background">#4285F4</item>
+        <item name="android:text">@string/purchase</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:layout_gravity">bottom|end</item>
+    </style>
+
+    <style name="DriveButtonStyle" parent="ButtonStyle">
+        <item name="android:background">@android:color/white</item>
+        <item name="android:textColor">#4285F4</item>
+        <item name="android:text">@string/drive</item>
+    </style>
 </resources>

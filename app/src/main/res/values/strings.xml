@@ -1,4 +1,10 @@
 <resources>
     <string name="app_name">BillingPJSample</string>
     <string name="load_product">Load Product</string>
+    <string name="drive">DRIVE</string>
+    <string name="purchase">PURCHASE</string>
+    <string name="button_buy">Buy</string>
+    <string name="error_codelab_not_finished">TODO: Here you will need to perform the
+        integration with Play Store to study the New way of integration with Play Billing.
+    </string>
 </resources>

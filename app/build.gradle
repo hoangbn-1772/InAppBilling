@@ -35,4 +35,5 @@ dependencies {
     /*Dependencies for Google Play Billing*/
     implementation 'com.android.billingclient:billing:2.0.3'
     implementation 'androidx.recyclerview:recyclerview:1.0.0'
+    implementation 'androidx.cardview:cardview:1.0.0'
 }

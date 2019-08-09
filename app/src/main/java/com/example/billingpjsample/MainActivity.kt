@@ -4,153 +4,76 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import com.android.billingclient.api.*
+import com.example.billingpjsample.billing.BillingManager
+import com.example.billingpjsample.billing.BillingProvider
+import com.example.billingpjsample.skulist.AcquireFragment
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlin.collections.HashMap
 
-class MainActivity : AppCompatActivity(), PurchasesUpdatedListener, View.OnClickListener {
+class MainActivity : AppCompatActivity(), BillingProvider, View.OnClickListener, BillingManager.BillingUpdatesListener {
 
-    private lateinit var billingClient: BillingClient
-    private lateinit var productsAdapter: ProductsAdapter
+    private lateinit var mBillingManager: BillingManager
+    private var mAcquireFragment: AcquireFragment? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        setupBillingClient()
         initComponents()
-    }
-
-    override fun onPurchasesUpdated(billingResult: BillingResult?, purchases: MutableList<Purchase>?) {
-        println("onPurchasesUpdated: ${billingResult?.responseCode}")
-        if (billingResult?.responseCode == BillingClient.BillingResponseCode.OK && purchases != null) {
-            for (purchase in purchases) {
-                handlePurchase(purchase)
-            }
-        } else if (billingResult?.responseCode == BillingClient.BillingResponseCode.USER_CANCELED) {
-            // Handle an error caused by a user cancelling the purchase flow
-        } else {
-            // Handle any other error codes
-        }
-    }
-
-    /**
-     * For consumable products: One-time products
-     */
-    private fun handlePurchase(purchase: Purchase) {
-        if (purchase.purchaseState == Purchase.PurchaseState.PURCHASED) {
-            if (!purchase.isAcknowledged) {
-                val consumeParams = ConsumeParams.newBuilder()
-                    .setPurchaseToken(purchase.purchaseToken)
-                    .setDeveloperPayload(purchase.developerPayload)
-                    .build()
-                billingClient.consumeAsync(consumeParams) { billingResult, purchaseToken ->
-                    if (billingResult.responseCode == BillingClient.BillingResponseCode.OK && purchaseToken != null) {
-                        println("AllowMultiplePurchases success, responseCode: ${billingResult.responseCode}")
-                    } else {
-                        println("Can't allowMultiplePurchases, responseCode: ${billingResult.responseCode}")
-                    }
-                }
-            }
-        } else if (purchase.purchaseState == Purchase.PurchaseState.PENDING) {
-            // Here you can confirm to the user that they've started the pending
-            // purchase, and to complete it, they should follow instructions that
-            // are given to them. You can also choose to remind the user in the
-            // future to complete the purchase if you detect that it is still
-            // pending.
-        }
-    }
-
-    /**
-     * For acknowledge a Subscriptions purchase
-     */
-    private fun handlePurchaseForSubs(purchase: Purchase) {
-        if (purchase.purchaseState == Purchase.PurchaseState.PURCHASED) {
-            if (!purchase.isAcknowledged) {
-                val acknowledgePurchaseParams = AcknowledgePurchaseParams
-                    .newBuilder()
-                    .setPurchaseToken(purchase.purchaseToken)
-                    .build()
-
-                billingClient.acknowledgePurchase(acknowledgePurchaseParams) {
-                    if (it.responseCode == BillingClient.BillingResponseCode.OK) {
-                        // Success
-                    } else {
-                        // Not success
-                    }
-                }
-            }
-        } else if (purchase.purchaseState == Purchase.PurchaseState.PENDING) {
-            // Handle pending
-        }
     }
 
     override fun onClick(v: View?) {
         when (v?.id) {
-            R.id.btn_load_product -> onLoadProductsClicked()
+            R.id.btn_drive -> {
+            }
+            R.id.btn_purchase -> {
+            }
         }
     }
 
-    private fun setupBillingClient() {
-        billingClient = BillingClient.newBuilder(this)
-            .setListener(this)
-            .build()
+    override fun getBillingManager(): BillingManager {
+        return mBillingManager
+    }
 
-        billingClient.startConnection(object : BillingClientStateListener {
+    override fun onBillingClientSetupFinished() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 
-            override fun onBillingServiceDisconnected() {
-                // Try to restart the connection on the next request to Google Play by
-                // calling the startConnection() method
-            }
+    override fun onConsumeFinish(token: String, result: Int) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 
-            override fun onBillingSetupFinished(billingResult: BillingResult?) {
-                if (billingResult?.responseCode == BillingClient.BillingResponseCode.OK) {
-                    println("BILLING | startConnection | RESULT: OK")
-                } else {
-                    println("BILLING | startConnection | RESULT: ${billingResult?.responseCode}")
-                }
-            }
-        })
+    override fun onPurchasesUpdated(purchases: MutableList<Purchase>) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     private fun initComponents() {
-        btn_load_product?.setOnClickListener(this)
+        btn_drive?.setOnClickListener(this)
+        btn_purchase?.setOnClickListener(this)
+
+        mBillingManager = BillingManager(this, this)
     }
 
-    private fun onLoadProductsClicked() {
-        if (billingClient.isReady) {
-            val params = SkuDetailsParams
-                .newBuilder()
-                .setSkusList(skuList)
-                .setType(BillingClient.SkuType.INAPP)
-                .build()
+    private fun onPurchaseButtonClicked(arg0: View) {
+        if (mAcquireFragment == null) {
+            mAcquireFragment = AcquireFragment()
+        }
 
-            billingClient.querySkuDetailsAsync(params) { billingResult, skuDetails ->
-                if (BillingClient.BillingResponseCode.OK == billingResult.responseCode && !skuDetails.isNullOrEmpty()) {
-                    println("querySkuDetailsAsync, responseCode: ${billingResult.responseCode}")
-                    setupProductAdapter(skuDetails)
-                } else {
-                    println("Can't querySkuDetailsAsync, responseCode: ${billingResult.responseCode}")
-                }
-            }
-        } else {
-            println("Billing Client not ready")
+        if (!isAcquireFragmentShown()) {
+            mAcquireFragment?.show(supportFragmentManager, DIALOG_TAG)
         }
     }
 
-    private fun setupProductAdapter(products: List<SkuDetails>) {
-        productsAdapter = ProductsAdapter(products) {
-            /*Enable the purchase of an in-app product*/
-            val billingFlowParams = BillingFlowParams
-                .newBuilder()
-                .setSkuDetails(it)
-                .build()
-            billingClient.launchBillingFlow(this, billingFlowParams)
-        }
-
-        rv_products?.apply {
-            adapter = productsAdapter
-        }
+    private fun isAcquireFragmentShown(): Boolean {
+        return mAcquireFragment != null
     }
 
     companion object {
-        private val skuList = listOf("get_5_coins", "get_10_coins", "get_20_coins")
+
+        private val SKUS = HashMap<String, List<String>>().apply {
+            put(BillingClient.SkuType.INAPP, listOf("gas", "premium"))
+            put(BillingClient.SkuType.SUBS, listOf("gold_monthly", "gold_yearly"))
+        }
+
+        private const val DIALOG_TAG = "dialog"
     }
 }
