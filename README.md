@@ -3,8 +3,13 @@
 
 ## In-app product types
 - One-time products: ví dụ game levels, media files...
+<img src="images/one_time_product.png" width='300' height='500'/>
+
 - Rewarded products: như là extra lives, tiền tệ trong game,...
+<img src="images/rewarded_products.png" width='300' height='500'/>
+
 - Subscriptions: như là tạp chí online, music streaming services,...
+<img src="images/subscription_products.jpg"/>
 
 ## Purchase tokens and order IDs
 - Purchase token: là một chuỗi đại diện cho quyền lợi cuả người mua đối với sản phẩm trên Google Play, nó chỉ ra rằng người dùng đã thanh toán cho một sản phẩm cụ thể, đại diện bởi SKU.
@@ -25,7 +30,6 @@
 <img src="images/steps_in_app_billing.png"/>
 
 ## Add Google Play Billing in app
- - Các bước để tích hợp Google Play Billing vào trong ứng dụng
 ### Step 1: Update your app's dependencies
  
 <img src="images/dependencies.png"/>
