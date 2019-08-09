@@ -24,7 +24,7 @@
 
 <img src="images/steps_in_app_billing.png"/>
 
-## Add Google Play Billing L in app
+## Add Google Play Billing in app
  - Các bước để tích hợp Google Play Billing vào trong ứng dụng
 ### Step 1: Update your app's dependencies
  
