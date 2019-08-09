@@ -114,6 +114,8 @@
 - Quá trình giao dịch mua thành công cũng tạo ra một **purchase token*.
 - Ngoài ra bạn bạn có thể tạo mã khuyến mãi **promo code**.
 
+- Hướng dẫn: <a href="https://support.google.com/googleplay/android-developer/answer/1153481">Create a one-time product</a>
+
 ### Add rewarded product
 - Một cách mang đến lợi ích cho người dùng. Các **rewarded products** hoặc các item người dùng có thể nhận được sau khi xem các video quảng cáo.
 - Các sản phẩm được thưởng này là các sản phẩm được tiêu thụ (comsume) để người dùng có thể nhận được nhiều lần.
@@ -122,8 +124,38 @@
 
 <img src="images/rewarded_product.png"/>
 
-### Add subscription
+- Quy trình làm việc của rewarded product:
 
+<img src="images/diagram_rewarded_product.png"/>
+
+- Hướng dẫn cách tạo Rewarded product: <a href="https://developer.android.com/google/play/billing/billing_library_overview#Verify-purchase-device">Create a rewarded product</a>
+
+### Add subscription
+- Subscriptions được cấu hình bằng Google Play Console, có một số đặc điểm như là thời hạn thanh toán, thời gian dùng thử,...
+- Bạn nên bật real-time developer notification để nhận các thông báo kịp thời về những thay đổi của các Subscription. Xem thêm <a href="https://developer.android.com/google/play/billing/realtime_developer_notifications.html">Add real-time developer notifications</a>
+- Một số trường hợp sử dụng Subscription mà bạn nên thử cung cấp các giải pháp trong Google Play Billing của mình:
+    + Xử lý các trạng thái liên quan đến đăng ký bằng real-time developer notification
+    + Tạm dừng một Subscription
+    + Cho phép người dùng đăng ký lại theo cách thủ công khi đăng ký đã bị hủy trước khi thời gian đăng ký kết thúc.
+    + Cung cấp một mã khuyến mãi dùng thử
+    + Cho phép user upgrade hoặc downgrade một Subs
+    + Hoàn lại chi phí một Subs
+    + Thu hồi một Subs
+    + Hủy đăng ký
+    + Khôi phục đăng ký
+    + Trì hoãn thanh toán cho người dùng để đăng ký miễn phí trong một khoảng thời gian nhất định.
+    + Giành lại một khách hàng
+
+- Tham khảo thêm: 
+  + <a href="https://developer.android.com/google/play/billing/billing_subscriptions">Add subscription-specific features</a>
+  + <a href="https://support.google.com/googleplay/android-developer/answer/140504">Create a subscription</a>
+  
+## Test Google Play Billing
+- Publish app của bạn lên Store có thể mất thời gian để hoàn thành quá trình upload trước khi có thể test.
+- Có thể test trên mọi thiết bị Android từ 1.6 trở lên. Version mới nhất của Google Play phải được cài trên device.
+
+- Chi tiết: <a href="https://developer.android.com/google/play/billing/billing_testing">Test Google Play Billing</a>
+  
 # Source
  - Android Developer: https://developer.android.com/google/play/billing/billing_library_overview#acknowledge
  - Medium:
