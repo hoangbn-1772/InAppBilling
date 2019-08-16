@@ -13,7 +13,7 @@
     android:foreground="?android:attr/selectableItemBackground"
     app:cardBackgroundColor="@android:color/white">
 
-    <LinearLayout
+    <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="?attr/selectableItemBackground"
@@ -21,13 +21,13 @@
         android:orientation="vertical"
         android:padding="@dimen/dp_16">
 
-        <LinearLayout
+        <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:orientation="horizontal">
 
-            <TextView
+            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/title"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -37,7 +37,7 @@
                 android:textSize="16sp"
                 android:textStyle="bold"/>
 
-            <TextView
+            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/price"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -46,36 +46,49 @@
                 android:textSize="16sp"
                 android:textStyle="bold"/>
 
-        </LinearLayout>
+        </androidx.appcompat.widget.LinearLayoutCompat>
 
-        <LinearLayout
+        <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp_8"
             android:gravity="center"
             android:orientation="horizontal">
 
-            <ImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/sku_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="start"/>
 
-            <TextView
+            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/description"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/dp_8"
                 android:layout_weight="1"
                 android:textSize="15sp"/>
-        </LinearLayout>
+        </androidx.appcompat.widget.LinearLayoutCompat>
 
-        <Button
-            android:id="@+id/state_button"
-            style="@style/ButtonStyle"
-            android:layout_marginTop="@dimen/dp_8"
-            android:contentDescription="@string/button_buy"
-            android:text="@string/button_buy"/>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_8">
 
-    </LinearLayout>
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_ads"
+                style="@style/ButtonStyle"
+                android:contentDescription="@string/button_buy"
+                android:text="@string/button_ads"/>
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_state"
+                style="@style/ButtonStyle"
+                android:layout_alignParentEnd="true"
+                android:contentDescription="@string/button_buy"
+                android:text="@string/button_buy"/>
+
+        </RelativeLayout>
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
 </androidx.cardview.widget.CardView>

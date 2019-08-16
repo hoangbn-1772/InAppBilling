@@ -7,43 +7,41 @@ import androidx.annotation.NonNull
 import androidx.annotation.Nullable
 import androidx.recyclerview.widget.RecyclerView
 import com.android.billingclient.api.SkuDetails
-import com.example.billingpjsample.billing.BillingProvider
-import com.example.billingpjsample.skulist.row.SkuRowData
 import kotlinx.android.synthetic.main.item_product.view.*
 
-class SkusAdapter(
-    @Nullable private var products: List<SkuRowData>,
-    @NonNull private val billingProvider: BillingProvider,
-    @NonNull private val onProductClicked: (SkuRowData) -> Unit
-) : RecyclerView.Adapter<SkusAdapter.SkusViewHolder>() {
+class SkuAdapter(
+    @Nullable private var products: List<SkuDetails>,
+    @NonNull private val onProductClicked: (SkuDetails) -> Unit,
+    @NonNull private val onLoadRewardedProduct: (SkuDetails) -> Unit
+) : RecyclerView.Adapter<SkuAdapter.SkuViewHolder>() {
 
-    fun updateProducts(products: List<SkuRowData>) {
+    fun updateProducts(products: List<SkuDetails>) {
         this.products = products
         notifyDataSetChanged()
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SkusViewHolder =
-        SkusViewHolder(
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SkuViewHolder =
+        SkuViewHolder(
             LayoutInflater.from(parent.context).inflate(R.layout.item_product, parent, false)
         )
 
     override fun getItemCount(): Int = if (products.isNullOrEmpty()) 0 else products.size
 
 
-    override fun onBindViewHolder(holder: SkusViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: SkuViewHolder, position: Int) {
         holder.bind(products[position])
     }
 
-    inner class SkusViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class SkuViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-        fun bind(skuRowData: SkuRowData) {
+        fun bind(skuDetails: SkuDetails) {
             with(itemView) {
-                title?.text = skuRowData.title
-                description?.text = skuRowData.description
-                price?.text = skuRowData.price
-                state_button?.isEnabled = true
+                title?.text = skuDetails.title
+                description?.text = skuDetails.description
+                price?.text = skuDetails.price
+                btn_state?.text = this.context.getString(R.string.button_buy)
 
-                when (skuRowData.sku) {
+                when (skuDetails.sku) {
                     "gas" -> sku_icon?.setImageResource(R.drawable.gas_icon)
                     "premium" -> sku_icon?.setImageResource(R.drawable.premium_icon)
                     "gold_monthly" -> {
@@ -52,6 +50,10 @@ class SkusAdapter(
                     else -> {
                     }
                 }
+
+                btn_state?.setOnClickListener { onProductClicked(skuDetails) }
+
+                btn_ads?.setOnClickListener { onLoadRewardedProduct(skuDetails) }
             }
         }
     }

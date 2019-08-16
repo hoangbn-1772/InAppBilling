@@ -160,8 +160,23 @@
   + <a href="https://support.google.com/googleplay/android-developer/answer/140504">Create a subscription</a>
   
 ## Test Google Play Billing
+### Prepare for testing
 - Publish app của bạn lên Store có thể mất thời gian để hoàn thành quá trình upload trước khi có thể test.
 - Có thể test trên mọi thiết bị Android từ 1.6 trở lên. Version mới nhất của Google Play phải được cài trên device.
+
+### Test one-time product
+- Google Play Billing cung cấp reserved product IDs và static responses cho phép bạn có thể test GPB của mình ngay cả khi ứng dụng chưa xuất bản.
+- Để test việc triển khai bằng các static response, bạn cần sử dụng các reserved product ID. Có 3 loại reserved product ID:
+	+ android.test.purchase
+	+ android.test.cancled
+	+ android.test.item_unavailable
+
+### Test rewarded product
+- Ngoài cách public lên Google Play Store để test, chúng ta có thể sử dụng một cách khác là sử dụng android.test.reward product ID.
+- Để hiển thị video quảng cáo tới người dùng ta gọi launchBillingFlow tương tự như các product khác.
+- Khi hoàn thành test, đảm bảo rằng thay thế android.test.reward bằng product ID thực tế.
+
+### Test subscriptions
 
 - Chi tiết: <a href="https://developer.android.com/google/play/billing/billing_testing">Test Google Play Billing</a>
 

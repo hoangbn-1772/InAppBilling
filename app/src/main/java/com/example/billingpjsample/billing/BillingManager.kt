@@ -1,33 +1,36 @@
 package com.example.billingpjsample.billing
 
 import android.app.Activity
+import android.content.Context
 import android.util.Log
 import androidx.annotation.NonNull
 import com.android.billingclient.api.*
 
-class BillingManager(@NonNull activity: Activity, @NonNull updatesListener: BillingUpdatesListener)
-    : PurchasesUpdatedListener {
+class BillingManager(
+    @NonNull activity: Activity,
+    @NonNull updatesListener: BillingUpdatesListener,
+    @NonNull serviceConnectedListener: ServiceConnectedListener
+) : PurchasesUpdatedListener {
 
     private val TAG = BillingManager::class.java.simpleName
-    private var mBillingClient: BillingClient
+    private var mBillingClient: BillingClient? = null
     private var mIsServerConnected: Boolean = false
     private val mActivity: Activity = activity
-    private lateinit var mTokenToBeConsumed: Set<String>
-    private lateinit var mPurchases: MutableList<Purchase>
+    private var mPurchases: MutableList<Purchase>? = null
     private val mBillingUpdatesListener: BillingUpdatesListener = updatesListener
     private var mBillingClientResponseCode = BILLING_MANAGER_NOT_INITIALIZED
+    private var mServiceConnectedListener: ServiceConnectedListener = serviceConnectedListener
 
     init {
         mBillingClient = BillingClient
             .newBuilder(mActivity)
             .setListener(this)
+            .setChildDirected(BillingClient.ChildDirected.NOT_CHILD_DIRECTED)
+            .enablePendingPurchases()
             .build()
 
         startServiceConnection(Runnable {
-            mBillingUpdatesListener.onBillingClientSetupFinished()
             Log.d(TAG, "Setup successful. Querying inventory")
-
-            queryPurchases()
         })
     }
 
@@ -54,15 +57,42 @@ class BillingManager(@NonNull activity: Activity, @NonNull updatesListener: Bill
         }
     }
 
+    fun getBillingClientResponseCode(): Int = mBillingClientResponseCode
+
     private fun handlePurchase(purchase: Purchase) {
 
+        when (purchase.purchaseState) {
+            Purchase.PurchaseState.PURCHASED -> {
+                if (purchase.isAcknowledged) {
+                    val acknowledgePurchaseParams = AcknowledgePurchaseParams.newBuilder()
+                        .setPurchaseToken(purchase.purchaseToken)
+                        .build()
+                    mBillingClient?.acknowledgePurchase(acknowledgePurchaseParams) {
+                        Log.d(TAG, it.responseCode.toString())
+                    }
+                } else {
+                    val consumeParams = ConsumeParams.newBuilder()
+                        .setPurchaseToken(purchase.purchaseToken)
+                        .setDeveloperPayload(purchase.developerPayload)
+                        .build()
+
+                    mBillingClient?.consumeAsync(consumeParams) { billingResult, purchaseToken ->
+                        Log.d(TAG, "${billingResult.responseCode} + $purchaseToken")
+                    }
+                }
+            }
+
+            Purchase.PurchaseState.PENDING -> {
+                Log.d(TAG, "PurchaseState.PENDING")
+            }
+        }
     }
 
     /**
      * Connect to Google Play Store service
      */
     private fun startServiceConnection(executeOnSuccess: Runnable?) {
-        mBillingClient.startConnection(object : BillingClientStateListener {
+        mBillingClient?.startConnection(object : BillingClientStateListener {
 
             override fun onBillingServiceDisconnected() {
                 mIsServerConnected = false
@@ -73,6 +103,7 @@ class BillingManager(@NonNull activity: Activity, @NonNull updatesListener: Bill
 
                 if (billingResult?.responseCode == BillingClient.BillingResponseCode.OK) {
                     mIsServerConnected = true
+                    mServiceConnectedListener.onServiceConnected(billingResult.responseCode)
                     executeOnSuccess?.run()
                 } else {
                 }
@@ -82,83 +113,81 @@ class BillingManager(@NonNull activity: Activity, @NonNull updatesListener: Bill
     }
 
     /**
-     * Get SKUs detail
-     */
-    fun querySkuDetailsAsync(
-        @BillingClient.SkuType itemType: String,
-        skuList: List<String>,
-        @NonNull listener: SkuDetailsResponseListener
-    ) {
-        val queryRequest = Runnable {
-            // Query the purchase async
-            val params = SkuDetailsParams.newBuilder()
-                .setSkusList(skuList)
-                .setType(itemType)
-
-            mBillingClient.querySkuDetailsAsync(params.build()) { billingResult, skuDetailsList ->
-                listener.onSkuDetailsResponse(billingResult, skuDetailsList)
-            }
-        }
-    }
-
-    /**
      * query for in-app product detail
      */
-    private fun queryPurchases() {
-        val queryToExecute = Runnable {
-            // Retrieve information about purchases that a user makes from your app
-            val purchaseResult = mBillingClient.queryPurchases(BillingClient.SkuType.INAPP)
+    fun querySkuDetailsAsync(sku: HashMap<String, List<String>>) {
+        val queryRequest = Runnable {
+            val skuList = ArrayList<String>()
+            sku[BillingClient.SkuType.INAPP]?.get(0)?.let { skuList.add(it) }
+            sku[BillingClient.SkuType.INAPP]?.get(1)?.let { skuList.add(it) }
+            sku[BillingClient.SkuType.INAPP]?.get(2)?.let { skuList.add(it) }
+            sku[BillingClient.SkuType.INAPP]?.get(3)?.let { skuList.add(it) }
+            sku[BillingClient.SkuType.INAPP]?.get(4)?.let { skuList.add(it) }
+            sku[BillingClient.SkuType.INAPP]?.get(5)?.let { skuList.add(it) }
 
-            // If there are subscriptions supported, we add subscription rows as well
-            if (areSubscriptionsSupported()) {
-                val subscriptionResult = mBillingClient.queryPurchases(BillingClient.SkuType.SUBS)
+            val params = SkuDetailsParams.newBuilder()
+                .setSkusList(skuList)
+                .setType(BillingClient.SkuType.INAPP)
 
-                if (subscriptionResult.responseCode == BillingClient.BillingResponseCode.OK) {
-                    purchaseResult.purchasesList.addAll(subscriptionResult.purchasesList)
-                } else {
-                    Log.e(TAG, "Got an error response trying to query subscription purchases")
-                }
-            } else if (purchaseResult.responseCode == BillingClient.BillingResponseCode.OK) {
-                Log.i(TAG, "Skipped subscription purchases query since they are not supported")
-            } else {
-                Log.w(TAG, "queryPurchases() got an error response code: ")
+            mBillingClient?.querySkuDetailsAsync(params.build()) { billingResult, skuDetailsList ->
+                mBillingUpdatesListener.onResultSkuDetail(billingResult, skuDetailsList)
             }
-
-            onQueryPurchasesFinished(purchaseResult)
         }
-
-        executeServiceRequest(queryToExecute)
-    }
-
-    private fun areSubscriptionsSupported(): Boolean {
-        val responseCode = mBillingClient.isFeatureSupported(BillingClient.FeatureType.SUBSCRIPTIONS).responseCode
-        if (responseCode != BillingClient.BillingResponseCode.OK) {
-            Log.w(TAG, "areSubscriptionsSupported() got an error response: $responseCode")
+        if (mBillingClient != null && mBillingClient?.isReady!!) {
+            queryRequest.run()
         }
-
-        return responseCode == BillingClient.BillingResponseCode.OK
-    }
-
-    /**
-     * Handle a result from querying of purchases and report an updated list to the listener
-     */
-    private fun onQueryPurchasesFinished(result: Purchase.PurchasesResult) {
-        if (!mBillingClient.isReady || result.responseCode != BillingClient.BillingResponseCode.OK) {
-            return
-        }
-
-        Log.d(TAG, "Query inventory was successful")
-
-        // Update the UI and purchases inventory with new list of purchases
-        mPurchases.clear()
     }
 
     private fun executeServiceRequest(runnable: Runnable) {
-        if (mIsServerConnected && mBillingClient.isReady) {
+        if (mIsServerConnected && mBillingClient?.isReady!!) {
             runnable.run()
         } else {
             // If billing service was disconnected, we try to reconnect 1 time.
             startServiceConnection(runnable)
+        }
+    }
+
+    /*Create Purchase Flow*/
+    fun initiatePurchaseFlow(skuDetails: SkuDetails) {
+        val purchaseFlowRequest = Runnable {
+            val flowParams = BillingFlowParams.newBuilder()
+                .setSkuDetails(skuDetails)
+                .build()
+
+            val responseCode = mBillingClient?.launchBillingFlow(mActivity, flowParams)
+        }
+
+        executeServiceRequest(purchaseFlowRequest)
+    }
+
+    /**
+     * To retrieve information about purchases that a user makes from your app
+     */
+    fun getPurchased() {
+        val purchasesResult = mBillingClient?.queryPurchases(BillingClient.SkuType.INAPP)
+        mBillingUpdatesListener.onResultPurchased(purchasesResult)
+    }
+
+    /**
+     * Rewarded product
+     */
+    fun loadVideoAds(skuDetails: SkuDetails) {
+        val params = RewardLoadParams.Builder()
+            .setSkuDetails(skuDetails)
+            .build()
+
+        mBillingClient?.loadRewardedSku(params) {
+            if (it.responseCode == BillingClient.BillingResponseCode.OK) {
+                Log.d(TAG, "Load video successful")
+                initiatePurchaseFlow(skuDetails)
+            }
+        }
+    }
+
+    fun destroy() {
+        if (mBillingClient != null && mBillingClient?.isReady!!) {
+            mBillingClient?.endConnection()
+            mBillingClient = null
         }
     }
 
@@ -168,11 +197,13 @@ class BillingManager(@NonNull activity: Activity, @NonNull updatesListener: Bill
 
     interface BillingUpdatesListener {
 
-        fun onBillingClientSetupFinished()
-
         fun onConsumeFinish(token: String, @BillingClient.BillingResponseCode result: Int)
 
         fun onPurchasesUpdated(purchases: MutableList<Purchase>)
+
+        fun onResultSkuDetail(billingResult: BillingResult?, skuDetails: List<SkuDetails>?)
+
+        fun onResultPurchased(purchasesResult: Purchase.PurchasesResult?)
     }
 
     interface ServiceConnectedListener {

@@ -3,8 +3,22 @@
     <string name="load_product">Load Product</string>
     <string name="drive">DRIVE</string>
     <string name="purchase">PURCHASE</string>
-    <string name="button_buy">Buy</string>
+    <string name="purchesed">GET PURCHASED</string>
     <string name="error_codelab_not_finished">TODO: Here you will need to perform the
         integration with Play Store to study the New way of integration with Play Billing.
     </string>
+
+    <string name="alert_fill_gas">You filled &#188; tank. Your tank is now %1$d/4 full!</string>
+    <string name="alert_error_consuming">Error while consuming: %1$s</string>
+    <string name="alert_already_purchased">Item is already purchased</string>
+
+    <string name="button_buy">Buy</string>
+    <string name="button_ads">Load video</string>
+    <string name="button_own">Own</string>
+    <string name="button_full_tank">Full tank</string>
+    <string name="button_change">Change</string>
+    <string name="toast_full_tank">Your tank is full, please use some gas before buying more.
+    </string>
+    <string name="alert_no_gas">Oh, no! You are out of gas! Try buying some!</string>
+    <string name="alert_drove">Vroooom, you drove a few miles.</string>
 </resources>
